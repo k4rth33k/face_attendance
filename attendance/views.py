@@ -3,19 +3,21 @@ from django.shortcuts import render
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from .forms import UploadFileForm
-
-# Imaginary function to handle an uploaded file.
-from attendance.utils import handle_uploaded_file
+from attendance.utils import check_for_attendance
 
 def upload_file(request):
     if request.method == 'POST' and request.FILES['myfile']:
         myfile = request.FILES['myfile']
         fs = FileSystemStorage('media')
         filename = fs.save(myfile.name, myfile)
-        uploaded_file_url = fs.url(filename)
-        return render(request, 'upload.html', {
-            'uploaded_file_url': uploaded_file_url
-        })
+        # uploaded_file_url = fs.url(filename)
+        face_info = check_for_attendance(myfile.name)
+        response = {
+            'faces' : face_info,
+            'uploaded_file_url': '..\\media\\' + myfile.name
+        }
+
+        return render(request, 'upload.html', response)
     return render(request, 'upload.html')
 
 '''
