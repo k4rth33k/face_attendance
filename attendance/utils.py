@@ -20,12 +20,15 @@ def face_api_detect(img_path):
     return (response.json())
 
 def check_for_attendance(filename):
-    Key = 'aad3f5ef6ec94d8fa4e7a77f930c84e1'
+    Key = '4868776d57d44c0e88f3d5f382a99b59'
     CF.Key.set(Key)
     connect = sqlite3.connect("db.sqlite3")
     c = connect.cursor()
 
-    img_path = 'media\\' + filename
+    img_path = 'attendance\\static\\media\\' + filename
+    print('@@@@@@@@@@@@@@@@@@@@@@@@@@')
+    print(img_path)
+    print('@@@@@@@@@@@@@@@@@@@@@@@@@@')
     res = CF.face.detect(img_path) 
     faceIds = []
     for face in res:
@@ -42,6 +45,9 @@ def check_for_attendance(filename):
             confidence = face['candidates'][0]['confidence']
             c.execute('SELECT * FROM Students WHERE personID = ?', (personId,))
             row = c.fetchone()
-            response.append((row[1], confidence))
+            if row:
+            	response.append((row[1], confidence))
+            else:
+            	print('Not Found')
             # print('############################')
     return response

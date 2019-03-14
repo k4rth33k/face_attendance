@@ -8,17 +8,17 @@ from attendance.utils import check_for_attendance
 def upload_file(request):
     if request.method == 'POST' and request.FILES['myfile']:
         myfile = request.FILES['myfile']
-        fs = FileSystemStorage('media')
+        fs = FileSystemStorage('attendance/static/media')
         filename = fs.save(myfile.name, myfile)
         # uploaded_file_url = fs.url(filename)
         face_info = check_for_attendance(myfile.name)
         response = {
             'faces' : face_info,
-            'uploaded_file_url': '..\\media\\' + myfile.name
+            'uploaded_file_url': myfile.name
         }
 
-        return render(request, 'upload.html', response)
-    return render(request, 'upload.html')
+        return render(request, 'attendance/upload.html', response)
+    return render(request, 'attendance/upload.html')
 
 '''
 from django.http import HttpResponseRedirect
