@@ -19,6 +19,8 @@ def upload_file(request):
         response = {
             'faces' : face_info,
             'uploaded_file_url': 'media/' + myfile.name
+            # 'uploaded_file_url': myfile.name
+            # 'uploaded_file_url': '..\\media\\' + myfile.name
 
         }
 
