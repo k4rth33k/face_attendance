@@ -14,7 +14,7 @@ def upload_file(request):
         face_info = check_for_attendance(myfile.name)
         response = {
             'faces' : face_info,
-            'uploaded_file_url': myfile.name
+            'uploaded_file_url': 'media/' + myfile.name
         }
 
         return render(request, 'attendance/upload.html', response)
