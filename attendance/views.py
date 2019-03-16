@@ -5,20 +5,25 @@ from django.core.files.storage import FileSystemStorage
 from .forms import UploadFileForm
 from attendance.utils import check_for_attendance
 
+
+def home(request):
+    return render(request, 'face_rest_api/templates')
+
 def upload_file(request):
     if request.method == 'POST' and request.FILES['myfile']:
         myfile = request.FILES['myfile']
-        fs = FileSystemStorage('attendance/static/media')
+        fs = FileSystemStorage('media')
         filename = fs.save(myfile.name, myfile)
         # uploaded_file_url = fs.url(filename)
         face_info = check_for_attendance(myfile.name)
         response = {
             'faces' : face_info,
             'uploaded_file_url': 'media/' + myfile.name
+
         }
 
-        return render(request, 'attendance/upload.html', response)
-    return render(request, 'attendance/upload.html')
+        return render(request, 'upload.html', response)
+    return render(request, 'upload.html')
 
 '''
 from django.http import HttpResponseRedirect
