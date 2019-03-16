@@ -4,7 +4,7 @@ from django.conf import settings
 
 
 def login(request):
-	return render(request, 'home.html')
+	return render(request, 'index.html')
 
 	
 def signup(request):
