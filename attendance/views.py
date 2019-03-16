@@ -4,11 +4,13 @@ from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from .forms import UploadFileForm
 from attendance.utils import check_for_attendance
+from django.contrib.auth.decorators import login_required
 
 
 def home(request):
     return render(request, 'face_rest_api/templates')
 
+@login_required
 def upload_file(request):
     if request.method == 'POST' and request.FILES['myfile']:
         myfile = request.FILES['myfile']
