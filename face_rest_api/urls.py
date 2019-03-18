@@ -21,6 +21,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('attendance/', include('attendance.urls'), name='attendance'),
     path('',views.login),
-    path('signup/',views.signup, name='signup')
+    path('signup/',views.signup, name='signup'),
+    path('logout/',views.logout, name='logout'),
+    path('token/',views.get_csrf_token, name='token'),
+
 
 ]
