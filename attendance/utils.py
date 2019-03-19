@@ -96,10 +96,20 @@ def get_attendance():
     connect = sqlite3.connect("db.sqlite3")
     c = connect.cursor()
     c.execute("SELECT * FROM Subjects")
-    subjects = c.fetchall()
+    temp_subjects = c.fetchall()
+    subjects = []
+    for sub in temp_subjects:
+        subjects.append(sub[0])
     c.execute("SELECT * FROM Attendance")
-    attendance = c.fetchall()
+    temp_att = c.fetchall()
+    attendance = {}
+    for names_subs in temp_att:
+        temp_list = names_subs[1].split(',')
+        attendance[names_subs[0]] = temp_list
+    c.execute("SELECT Name FROM Students")
+    students = c.fetchall()
     response = []
     response.append(attendance)
     response.append(subjects)
+    response.append(students)
     return response

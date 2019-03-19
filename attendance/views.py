@@ -53,6 +53,7 @@ def attendance_table_view(request):
     att_subs = get_attendance()
     response = {
         'attendance':att_subs[0],
-        'subjects':att_subs[1]
+        'subjects':att_subs[1],
+        'students':att_subs[2],
     }
     return render(request, 'table.html', response)
