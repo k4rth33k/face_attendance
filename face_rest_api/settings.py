@@ -26,13 +26,13 @@ SECRET_KEY = 'o$b862^$cx1@mw9w@@f$w8_w$cijl#f1!d%+s5-b*-1r*h+_e9'
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    '192.168.43.53',
-    '192.168.1.119',
+    # '192.168.43.53',
+    # '192.168.1.119',
 ]
 
-CSRF_COOKIE_HTTPONLY = True
-CSRF_COOKIE_SECURE = True
-CSRF_USE_SESSIONS = True
+# CSRF_COOKIE_HTTPONLY = True
+# CSRF_COOKIE_SECURE = True
+# CSRF_USE_SESSIONS = True
 
 # Application definition
 

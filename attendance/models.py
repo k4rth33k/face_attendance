@@ -17,3 +17,10 @@ from django.dispatch import receiver
 # @receiver(post_save, sender=User)
 # def save_user_profile(sender, instance, **kwargs):
 #     instance.profile.save()
+
+class Attendance(models.Model):
+	student_name = models.CharField(max_length = 30, blank = True)
+	subjects = models.TextField()
+
+	def __str__(self):
+		return str(self.student_name)

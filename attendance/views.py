@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from .forms import UploadFileForm
-from attendance.utils import check_for_attendance
+from attendance.utils import check_for_attendance, put_attendance, get_attendance
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 
@@ -20,6 +20,8 @@ def upload_file(request):
         filename = fs.save(myfile.name, myfile)
         # uploaded_file_url = fs.url(filename)
         face_info = check_for_attendance(myfile.name)
+        put_attendance(myfile.name, 'subject_name_2')
+        print('##################',myfile.name)
         response = {
             'faces' : face_info,
             'uploaded_file_url': 'media/' + myfile.name
@@ -39,9 +41,18 @@ def andr_file(request):
         myfile = request.FILES['image']
         fs = FileSystemStorage('media')
         filename = fs.save(myfile.name, myfile)
+        subject_name = request.POST['subject_name']
+        ##########################
+        put_attendance(myfile.name, subject_name)
+        ##########################
         return HttpResponse('File Uploaded')
     return HttpResponse('Bad Request')
 
-
-
-
+@login_required
+def attendance_table_view(request):
+    att_subs = get_attendance()
+    response = {
+        'attendance':att_subs[0],
+        'subjects':att_subs[1]
+    }
+    return render(request, 'table.html', response)
