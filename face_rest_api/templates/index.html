@@ -28,8 +28,27 @@
 	<link rel="stylesheet" type="text/css" href="{% static 'login_template/css/util.css' %}">
 	<link rel="stylesheet" type="text/css" href="{% static 'login_template/css/main.css' %}">
 <!--===============================================================================================-->
+	<!-- <script src="{% static 'bootbox/bootbox.all.min.js' %}"></script> -->
+<!--===============================================================================================-->
+	<!-- <script src="{% static 'bootbox/bootbox.locales.min.js' %}"></script>
+	<script src="{% static 'bootbox/bootbox.min.js' %}"></script> -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<script type="text/javascript">
+		function message(arg) {
+			console.log(arg)
+		}
+		function checkForError(argument) {
+			var e = document.getElementById('err');
+			// console.log(e);
+			if (e != null){
+				alert('Wrong Credentials');
+			}
+		}
+	</script>
+
+
 </head>
-<body>
+<body onload="checkForError()">
 	
 	<div class="limiter">
 		<div class="container-login100" style="background-image: url('{% static "login_template/images/10.jpg" %}');">
@@ -79,6 +98,9 @@
 							Forgot Password?
 						</a>
 					</div>
+					{% if message %}
+						<p id="err"></p>
+					{% endif %}
 				</form>
 			</div>
 		</div>
@@ -103,6 +125,7 @@
 	<script src="{% static 'login_template/vendor/countdowntime/countdowntime.js' %}"></script>
 <!--===============================================================================================-->
 	<script src="{% static 'login_template/js/main.js' %}"></script>
+<!--===============================================================================================-->
 
 </body>
 </html>

@@ -23,7 +23,9 @@ urlpatterns = [
     path('',views.login),
     path('signup/',views.signup, name='signup'),
     path('logout/',views.logout, name='logout'),
-    path('token/',views.get_csrf_token, name='token'),
+    # path('token/',views.get_csrf_token, name='token'),
+    path('camera/',views.camera, name='camera'),
+
 
 
 ]

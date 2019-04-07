@@ -2,37 +2,59 @@ from django.core.files.storage import FileSystemStorage
 import requests
 import cognitive_face as CF
 import sqlite3
+import os
+from random import shuffle
+import time
+import json
+from PIL import Image
 # from models import Attendance
 
-personGroupId = 'grp1'
+personGroupId = 'class1'
+# Key = 'aad3f5ef6ec94d8fa4e7a77f930c84e1'
+Key = 'f1f9523961ba4f6dad267e14d1d24f3f'
 
-def handle_uploaded_file(f):
-    print('handle_uploaded_file')
-    fs = FileSystemStorage()
-    fs.save(f.name, f)
+
+BASE_URL = 'https://centralindia.api.cognitive.microsoft.com/face/v1.0/'  # Replace with your regional Base URL
+CF.BaseUrl.set(BASE_URL)
 
 def face_api_detect(img_path):
     headers = {'Content-Type': 'application/octet-stream', 
-                    'Ocp-Apim-Subscription-Key':'aad3f5ef6ec94d8fa4e7a77f930c84e1'}
-    face_api_url = 'https://westus.api.cognitive.microsoft.com/face/v1.0/detect'
+                    'Ocp-Apim-Subscription-Key':'f1f9523961ba4f6dad267e14d1d24f3f'}
+    face_api_url = 'https://centralindia.api.cognitive.microsoft.com/face/v1.0/detect?recognitionModel=recognition_02'
  
     data = open(img_path, 'rb')
     response = requests.post(face_api_url , headers=headers, data=data)
     return (response.json())
 
+def face_api_identify(face_ids):
+    headers = {'Content-Type': 'application/json', 
+                    'Ocp-Apim-Subscription-Key':'f1f9523961ba4f6dad267e14d1d24f3f'}
+    face_api_url = 'https://centralindia.api.cognitive.microsoft.com/face/v1.0/identify'
+
+    data = {
+        'personGroupId' : personGroupId,
+        'faceIds' : face_ids
+    }
+    json_data = json.dumps(data)
+
+    response = requests.post(face_api_url , headers=headers, data=json_data)
+    return (response.json())
+
 def check_for_attendance(filename):
-    Key = 'aad3f5ef6ec94d8fa4e7a77f930c84e1'
     CF.Key.set(Key)
     connect = sqlite3.connect("db.sqlite3")
     c = connect.cursor()
 
     img_path = 'media\\' + filename
-    res = CF.face.detect(img_path) 
+    # res = CF.face.detect(img_path)
+    res = face_api_detect(img_path)
     faceIds = []
     for face in res:
         faceIds.append(face['faceId'])
-    res = CF.face.identify(faceIds, personGroupId)
-    # print(res)
+    # res = CF.face.identify(faceIds, personGroupId)
+    res = face_api_identify(faceIds)
+    print('######111111111', res, type(res))
+
     response = []
     for face in res:
         if not face['candidates']:
@@ -45,22 +67,26 @@ def check_for_attendance(filename):
             row = c.fetchone()
             response.append((row[1], confidence))
             # print('############################')
-    print(response)
+    print('########', response)
     return response
 
 def put_attendance(filename, subject_name):
-    Key = 'aad3f5ef6ec94d8fa4e7a77f930c84e1'
     CF.Key.set(Key)
     connect = sqlite3.connect("db.sqlite3")
     c = connect.cursor()
 
     img_path = 'media\\' + filename
-    res = CF.face.detect(img_path) 
+    #Image Pre-processing -- Reducing Size
+    image = Image.open(img_path)
+    image.save(img_path, quality=80, optimized=True)
+    #
+    res = face_api_detect(img_path) #Calling Face API for detection
+    print('debug->detect',res)
     faceIds = []
     for face in res:
         faceIds.append(face['faceId'])
-    res = CF.face.identify(faceIds, personGroupId)
-    # print(res)
+    res = face_api_identify(faceIds) #Calling Face API for identification
+    print('debug->identify',res)
     attendance = []
     for face in res:
         if not face['candidates']:
@@ -71,7 +97,8 @@ def put_attendance(filename, subject_name):
             confidence = face['candidates'][0]['confidence']
             c.execute('SELECT * FROM Students WHERE personID = ?', (personId,))
             row = c.fetchone()
-            attendance.append((row[1], confidence))
+            if row[1] is not None and confidence is not None:
+                attendance.append((row[1], confidence))
             # print('############################')
     att_students = []
     c.execute('SELECT Student FROM Attendance')
@@ -88,9 +115,6 @@ def put_attendance(filename, subject_name):
             c.execute("UPDATE Attendance SET Subjects = ? WHERE Student = ?",(subjects,name_conf[0],))
     connect.commit()
 
-    # students = Attendance.objects.get(student_name = 'test')
-    # print(students)
-
 
 def get_attendance():
     connect = sqlite3.connect("db.sqlite3")
@@ -106,10 +130,33 @@ def get_attendance():
     for names_subs in temp_att:
         temp_list = names_subs[1].split(',')
         attendance[names_subs[0]] = temp_list
-    c.execute("SELECT Name FROM Students")
+    c.execute("SELECT Name FROM Students ORDER BY ID")
     students = c.fetchall()
     response = []
     response.append(attendance)
     response.append(subjects)
     response.append(students)
     return response
+
+def clear_attendance():
+    connect = sqlite3.connect("db.sqlite3")
+    c = connect.cursor()
+    c.execute("DELETE FROM Attendance")
+    connect.commit()
+
+def add_person_faces():
+    personId = 'd3b0b08c-240f-4786-87d6-cd43aaffdee6'
+    headers = {'Content-Type': 'application/octet-stream', 
+                    'Ocp-Apim-Subscription-Key':'f1f9523961ba4f6dad267e14d1d24f3f'}
+    face_api_url = 'https://centralindia.api.cognitive.microsoft.com/face/v1.0/persongroups/class1/persons/'+ personId +'/persistedFaces'
+    
+    path = "D:\\code\\innovators-project\\attendace-altered-git\\attendance-face-recog\\dataset\\hruday_new"
+    items = os.listdir(path)
+    shuffle(items)
+    for img_file in items:
+        data = open(path + '\\' + img_file, 'rb')
+        response = requests.post(face_api_url , headers=headers, data=data)
+        time.sleep(3)
+        print(img_file)
+        print (response.json())
+
