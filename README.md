@@ -8,6 +8,6 @@ Presence is an facial recognition based attendance management application meant 
  - Azure
  - Android
 
-More info in [this](https://www.linkedin.com/pulse/machine-learning-real-world-problems-kartheek-surampudi/) post.
+More info in [this](https://www.linkedin.com/pulse/presence-modern-ai-powered-approach-attendance-system-surampudi/) post.
 
 [Demo Video](https://www.youtube.com/watch?v=ArWHtbPsmVs&t=12s)
