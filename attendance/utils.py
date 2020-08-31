@@ -78,6 +78,7 @@ def put_attendance(filename, subject_name):
     img_path = 'media\\' + filename
     #Image Pre-processing -- Reducing Size
     image = Image.open(img_path)
+    print("######FileReduction#######")
     image.save(img_path, quality=80, optimized=True)
     #
     res = face_api_detect(img_path) #Calling Face API for detection
